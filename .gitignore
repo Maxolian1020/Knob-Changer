@@ -1,0 +1,31 @@
+# Build output
+bin/
+obj/
+out/
+publish/
+
+# User-specific files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Package artifacts
+*.nupkg
+*.snupkg
+
+# Publish profiles
+*.pubxml
+*.pubxml.user
+
+# Local app data
+**/AppData/
