@@ -29,7 +29,17 @@ public sealed class KeyboardHookService : IKeyboardHookService
             return;
         }
 
-        _hookId = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, GetModuleHandle("user32"), 0);
+        var moduleHandle = GetModuleHandle(null);
+        _hookId = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, moduleHandle, 0);
+        if (_hookId == IntPtr.Zero)
+        {
+            var error = Marshal.GetLastWin32Error();
+            Console.WriteLine($"Keyboard hook registration failed with error {error}");
+        }
+        else
+        {
+            Console.WriteLine("Keyboard hook registered successfully.");
+        }
     }
 
     public void Stop()

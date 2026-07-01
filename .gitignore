@@ -23,6 +23,10 @@ Desktop.ini
 *.nupkg
 *.snupkg
 
+# Keep release artifacts
+!releases/
+!releases/**
+
 # Publish profiles
 *.pubxml
 *.pubxml.user
