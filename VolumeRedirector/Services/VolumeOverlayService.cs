@@ -134,6 +134,7 @@ public sealed class VolumeOverlayService : IVolumeOverlayService, IDisposable
 
         private readonly TextBlock _statusText;
         private readonly System.Windows.Controls.ProgressBar _volumeBar;
+        private bool _isShowing;
 
         public OverlayWindow(int width, int height)
         {
@@ -218,25 +219,34 @@ public sealed class VolumeOverlayService : IVolumeOverlayService, IDisposable
 
         public void ShowOverlay()
         {
+            BeginAnimation(OpacityProperty, null);
+
             if (Visibility != Visibility.Visible)
             {
                 Show();
             }
 
-            Opacity = 0.0;
-            Margin = new Thickness(0, 0, 0, 8);
             IsHitTestVisible = false;
             Topmost = true;
             UpdateLayout();
 
-            var animation = new DoubleAnimation
+            if (!_isShowing)
             {
-                From = 0.0,
-                To = 1.0,
-                Duration = TimeSpan.FromMilliseconds(140),
-                EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = EasingMode.EaseOut }
-            };
-            BeginAnimation(OpacityProperty, animation);
+                Opacity = 0.0;
+                var animation = new DoubleAnimation
+                {
+                    From = 0.0,
+                    To = 1.0,
+                    Duration = TimeSpan.FromMilliseconds(140),
+                    EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = EasingMode.EaseOut }
+                };
+                BeginAnimation(OpacityProperty, animation);
+                _isShowing = true;
+            }
+            else
+            {
+                Opacity = 1.0;
+            }
 
             var helper = new WindowInteropHelper(this);
             if (helper.Handle != IntPtr.Zero)
@@ -248,12 +258,24 @@ public sealed class VolumeOverlayService : IVolumeOverlayService, IDisposable
 
         public void HideOverlay()
         {
+            if (!_isShowing)
+            {
+                return;
+            }
+
+            BeginAnimation(OpacityProperty, null);
             var animation = new DoubleAnimation
             {
                 From = Opacity,
                 To = 0.0,
                 Duration = TimeSpan.FromMilliseconds(120),
                 EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            animation.Completed += (_, _) =>
+            {
+                _isShowing = false;
+                Hide();
+                Opacity = 0.0;
             };
             BeginAnimation(OpacityProperty, animation);
             IsHitTestVisible = false;
