@@ -2,11 +2,17 @@ name: Build Windows EXE
 
 on:
   push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Check out repository
@@ -37,3 +43,19 @@ jobs:
           name: VolumeRedirector-win-x64
           path: .\VolumeRedirector\bin\Release\net8.0-windows\win-x64\publish\VolumeRedirector.exe
           if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $asset = ".\VolumeRedirector\bin\Release\net8.0-windows\win-x64\publish\VolumeRedirector.exe"
+
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title $tag --generate-notes
+          }
+
+          gh release upload $tag $asset --clobber
