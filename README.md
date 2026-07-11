@@ -10,6 +10,8 @@ Volume Redirector is a Windows tray app that intercepts the system media volume 
 - Lightweight Windows-style volume overlay
 - Startup with Windows support
 
+MIGHT BE BLOCKED BY WINDOWS SECURITY CANT DO ANYTHING ABOUT IT
+
 ## Build
 
 From the project directory:
